@@ -2,18 +2,17 @@
 
 namespace ErpNET\Delivery\v1\Controllers;
 
-use ErpNET\Delivery\v1\Interfaces\AttachmentRepository;
-use ErpNET\Delivery\v1\Controllers\Controller;
+use ErpNET\Delivery\v1\Interfaces\DeliveryRepository;
 
 /**
- *  Attachment resource representation.
+ *  Delivery resource representation.
  *
- * @Resource("Attachment", uri="/delivery")
+ * @Resource("Delivery", uri="/delivery")
  */
 class DeliveryServiceController extends Controller
 {
     protected $routeName = 'delivery';
-    protected $repositoryClass = AttachmentRepository::class;
+    protected $repositoryClass = DeliveryRepository::class;
 
     /**
      * @var integer
@@ -26,4 +25,8 @@ class DeliveryServiceController extends Controller
      */
     protected $defaultCriterias = [];
 
+    public function delivery()
+    {
+//        $this->repo
+    }
 }

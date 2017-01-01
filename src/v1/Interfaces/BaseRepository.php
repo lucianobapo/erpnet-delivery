@@ -7,8 +7,8 @@ use Prettus\Repository\Contracts\RepositoryCriteriaInterface;
 
 /**
  * Interface PartnerRepository
- * @package namespace ErpNET\Models\Interfaces;
- * @see \ErpNET\Models\v1\Repositories\BaseRepository
+ * @package namespace ErpNET\Delivery\Interfaces;
+ * @see \ErpNET\Delivery\v1\Repositories\BaseRepositoryEloquent
  */
 interface BaseRepository extends RepositoryInterface, RepositoryCriteriaInterface
 {

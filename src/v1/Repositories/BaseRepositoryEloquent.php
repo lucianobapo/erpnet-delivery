@@ -1,6 +1,6 @@
 <?php
 
-namespace ErpNET\Models\v1\Repositories;
+namespace ErpNET\Delivery\v1\Repositories;
 
 use Prettus\Repository\Contracts\CacheableInterface;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -9,7 +9,7 @@ use Prettus\Repository\Traits\CacheableRepository;
 
 /**
  * Class BaseRepositoryEloquent
- * @package namespace ErpNET\Models\v1\Repositories;
+ * @package namespace ErpNET\Delivery\v1\Repositories;
  */
 class BaseRepositoryEloquent extends BaseRepository //implements CacheableInterface
 {
@@ -53,7 +53,7 @@ class BaseRepositoryEloquent extends BaseRepository //implements CacheableInterf
      */
     public function presenter()
     {
-        $config = config("erpnetMigrates.tables.".$this->model->getTable().".transformPresenter");
-        if(!is_null($config)) return $this->presenterClass;
+//        $config = config("erpnetMigrates.tables.".$this->model->getTable().".transformPresenter");
+//        if(!is_null($config)) return $this->presenterClass;
     }
 }
