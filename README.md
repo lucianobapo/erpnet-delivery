@@ -1,8 +1,8 @@
-# erpnet-models
+# erpnet-delivery
 
-[Site do GitHub](https://github.com/lucianobapo/erpnet-models)
+[Site do GitHub](https://github.com/lucianobapo/erpnet-delivery)
 
-[![Latest Stable Version](https://poser.pugx.org/ilhanet/erpnet-models/v/stable)](https://packagist.org/packages/ilhanet/erpnet-models) 
-[![Total Downloads](https://poser.pugx.org/ilhanet/erpnet-models/downloads)](https://packagist.org/packages/ilhanet/erpnet-models) 
-[![Latest Unstable Version](https://poser.pugx.org/ilhanet/erpnet-models/v/unstable)](https://packagist.org/packages/ilhanet/erpnet-models) 
-[![License](https://poser.pugx.org/ilhanet/erpnet-models/license)](https://packagist.org/packages/ilhanet/erpnet-models)
+[![Latest Stable Version](https://poser.pugx.org/ilhanet/erpnet-delivery/v/stable)](https://packagist.org/packages/ilhanet/erpnet-delivery) 
+[![Total Downloads](https://poser.pugx.org/ilhanet/erpnet-delivery/downloads)](https://packagist.org/packages/ilhanet/erpnet-delivery) 
+[![Latest Unstable Version](https://poser.pugx.org/ilhanet/erpnet-delivery/v/unstable)](https://packagist.org/packages/ilhanet/erpnet-delivery) 
+[![License](https://poser.pugx.org/ilhanet/erpnet-delivery/license)](https://packagist.org/packages/ilhanet/erpnet-delivery)
