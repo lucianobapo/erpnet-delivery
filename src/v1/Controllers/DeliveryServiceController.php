@@ -2,7 +2,7 @@
 
 namespace ErpNET\Delivery\v1\Controllers;
 
-use ErpNET\Delivery\v1\Interfaces\DeliveryRepository;
+use ErpNET\Delivery\v1\Services\DeliveryService;
 
 /**
  *  Delivery resource representation.
@@ -12,7 +12,6 @@ use ErpNET\Delivery\v1\Interfaces\DeliveryRepository;
 class DeliveryServiceController extends Controller
 {
     protected $routeName = 'delivery';
-    protected $repositoryClass = DeliveryRepository::class;
 
     /**
      * @var integer
@@ -24,6 +23,14 @@ class DeliveryServiceController extends Controller
      * @var array
      */
     protected $defaultCriterias = [];
+
+    /**
+     * Controller constructor.
+     */
+    public function __construct(DeliveryService $deliveryService)
+    {
+        $this->service = $deliveryService;
+    }
 
     public function delivery()
     {
