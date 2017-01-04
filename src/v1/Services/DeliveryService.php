@@ -9,6 +9,8 @@
 
 namespace ErpNET\Delivery\v1\Services;
 
+use ErpNET\Models\v1\Interfaces\ProductRepository;
+
 class DeliveryService
 {
     protected $productRepository;
@@ -18,8 +20,6 @@ class DeliveryService
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
-
-
     }
 
     public function deliveryPackage()
