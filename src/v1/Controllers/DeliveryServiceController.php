@@ -11,18 +11,8 @@ use ErpNET\Delivery\v1\Services\DeliveryService;
  */
 class DeliveryServiceController extends Controller
 {
-    protected $routeName = 'delivery';
 
-    /**
-     * @var integer
-     */
-    protected $paginateItemCount = 3;
-
-    /**
-     * Criterias to load
-     * @var array
-     */
-    protected $defaultCriterias = [];
+    protected $service;
 
     /**
      * Controller constructor.
@@ -34,6 +24,7 @@ class DeliveryServiceController extends Controller
 
     public function package()
     {
-//        $this->repo
+        return $this->service->deliveryPackage();
+
     }
 }

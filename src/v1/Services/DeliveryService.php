@@ -11,13 +11,19 @@ namespace ErpNET\Delivery\v1\Services;
 
 class DeliveryService
 {
+    protected $productRepository;
     /**
      * Service constructor.
      */
-    public function __construct()
+    public function __construct(ProductRepository $productRepository)
     {
-//        if (isset($this->repositoryClass))
-//            $this->repository = app($this->repositoryClass);
+        $this->productRepository = $productRepository;
 
+
+    }
+
+    public function deliveryPackage()
+    {
+        return $this->productRepository->all();
     }
 }
