@@ -32,7 +32,7 @@ class DeliveryServiceController extends Controller
         $this->service = $deliveryService;
     }
 
-    public function delivery()
+    public function package()
     {
 //        $this->repo
     }

@@ -16,8 +16,8 @@ class DeliveryService
      */
     public function __construct()
     {
-        if (isset($this->repositoryClass))
-            $this->repository = app($this->repositoryClass);
+//        if (isset($this->repositoryClass))
+//            $this->repository = app($this->repositoryClass);
 
     }
 }
