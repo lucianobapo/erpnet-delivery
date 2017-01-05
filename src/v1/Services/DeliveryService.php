@@ -10,6 +10,7 @@
 namespace ErpNET\Delivery\v1\Services;
 
 use ErpNET\Models\v1\Interfaces\ProductRepository;
+use ErpNET\Delivery\v1\Entities\DeliveryPackageEloquent;
 
 class DeliveryService
 {
@@ -24,6 +25,8 @@ class DeliveryService
 
     public function deliveryPackage()
     {
+        $aa = new DeliveryPackageEloquent;
+        dd($aa);
         return $this->productRepository->all();
     }
 }

@@ -17,5 +17,5 @@ interface BaseRepository extends RepositoryInterface, RepositoryCriteriaInterfac
      *
      * @return string
      */
-    public function model();
+//    public function model();
 }
