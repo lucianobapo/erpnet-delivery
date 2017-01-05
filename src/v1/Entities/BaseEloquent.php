@@ -1,6 +1,6 @@
 <?php
 
-namespace ErpNET\Models\v1\Entities;
+namespace ErpNET\Delivery\v1\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
