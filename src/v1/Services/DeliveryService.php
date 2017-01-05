@@ -27,6 +27,8 @@ class DeliveryService
     {
         $aa = new DeliveryPackageEloquent;
         dd($aa);
-        return $this->productRepository->all();
+        $products = $this->productRepository->setPresenter()->all();
+        
+        return $products;
     }
 }
