@@ -9,6 +9,7 @@
 
 namespace ErpNET\Delivery\v1\Services;
 
+use ErpNET\Models\v1\Criteria\ProductActiveCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupActivatedCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupCategoriesCriteria;
 use ErpNET\Models\v1\Interfaces\ProductRepository;
@@ -30,12 +31,15 @@ class DeliveryService
 
     public function deliveryPackage()
     {
-        $productGroups = $this->productGroupRepository
-            ->pushCriteria(ProductGroupCategoriesCriteria::class)
-            ->pushCriteria(ProductGroupActivatedCriteria::class)
+//        $productGroups = $this->productGroupRepository
+//            ->pushCriteria(ProductGroupCategoriesCriteria::class)
+//            ->pushCriteria(ProductGroupActivatedCriteria::class)
+//            ->all();
+//        dd($productGroups);
+        $products = $this->productRepository
+            ->pushCriteria(ProductActiveCriteria::class)
             ->all();
-        dd($productGroups);
-        $products = $this->productRepository->all();
+        dd($products->toArray());
         
         return $products;
     }
