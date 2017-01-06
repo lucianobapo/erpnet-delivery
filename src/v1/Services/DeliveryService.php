@@ -29,6 +29,7 @@ class DeliveryService
     {
 //        $aa = new DeliveryPackageEloquent;
 //        dd($aa);
+        $sharedStats = $this->sharedStatRepository->pushCriteria();
         $sharedStats = $this->sharedStatRepository->all();
         dd($sharedStats);
         $products = $this->productRepository->all();
