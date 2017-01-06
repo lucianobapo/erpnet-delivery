@@ -11,6 +11,7 @@ namespace ErpNET\Delivery\v1\Services;
 
 use ErpNET\Models\v1\Interfaces\ProductRepository;
 use ErpNET\Delivery\v1\Entities\DeliveryPackageEloquent;
+use ErpNET\Models\v1\Interfaces\SharedStatRepository;
 
 class DeliveryService
 {
@@ -18,16 +19,19 @@ class DeliveryService
     /**
      * Service constructor.
      */
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductRepository $productRepository, SharedStatRepository $sharedStatRepository)
     {
         $this->productRepository = $productRepository;
+        $this->sharedStatRepository = $sharedStatRepository;
     }
 
     public function deliveryPackage()
     {
-        $aa = new DeliveryPackageEloquent;
-        dd($aa);
-        $products = $this->productRepository->setPresenter()->all();
+//        $aa = new DeliveryPackageEloquent;
+//        dd($aa);
+        $sharedStats = $this->sharedStatRepository->all();
+        dd($sharedStats);
+        $products = $this->productRepository->all();
         
         return $products;
     }
