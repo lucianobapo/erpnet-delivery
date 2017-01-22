@@ -3,6 +3,7 @@
 namespace ErpNET\Delivery\v1\Controllers;
 
 use ErpNET\Delivery\v1\Services\DeliveryService;
+use Prettus\Validator\Exceptions\ValidatorException;
 
 /**
  *  Delivery resource representation.
@@ -24,7 +25,34 @@ class DeliveryServiceController extends Controller
 
     public function package()
     {
-        return $this->service->deliveryPackage();
+        try{
+            $fields = request()->all();
+            logger($fields);
 
+//            $createdData = $this->repository->create($fields);
+            $createdData = $this->service->createPackage($fields);
+            
+            $response = [
+                'message' => 'Resource created.',
+                'data'    => $createdData->toArray(),
+            ];
+            
+            if (request()->wantsJson()) {
+
+                return response()->json($response);
+            }
+            
+            return redirect('welcome');
+            
+        } catch (ValidatorException $e) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'error'   => true,
+                    'message' => $e->getMessageBag()
+                ]);
+            }
+
+            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+        }
     }
 }
