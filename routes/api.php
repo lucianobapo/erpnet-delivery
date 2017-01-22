@@ -35,7 +35,7 @@ $router
                     'uses'=> 'ApiController@appVersion'
                 ]);                
                 
-                $router->get('/delivery', ['as'=>'delivery.package','uses'=> 'DeliveryServiceController@package']);
+                $router->post('/delivery', ['as'=>'delivery.package','uses'=> 'DeliveryServiceController@package']);
             });
     });
 
