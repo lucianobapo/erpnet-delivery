@@ -29,7 +29,6 @@ class DeliveryServiceController extends Controller
             $fields = request()->all();
             logger($fields);
 
-//            $createdData = $this->repository->create($fields);
             $createdData = $this->service->createPackage($fields);
             
             $response = [

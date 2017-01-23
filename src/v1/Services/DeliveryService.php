@@ -20,6 +20,7 @@ use ErpNET\Delivery\v1\Entities\DeliveryPackageEloquent;
 use ErpNET\Models\v1\Interfaces\ProductGroupRepository;
 use ErpNET\Models\v1\Interfaces\SharedOrderTypeRepository;
 use ErpNET\Models\v1\Interfaces\SharedOrderPaymentRepository;
+use ErpNET\Models\v1\Interfaces\SharedCurrencyRepository;
 use ErpNET\Models\v1\Interfaces\OrderService;
 
 class DeliveryService
@@ -31,6 +32,7 @@ class DeliveryService
     protected $partnerRepository;
     protected $sharedOrderTypeRepository;
     protected $sharedOrderPaymentRepository;
+    protected $sharedCurrencyRepository;
 
     protected $orderService;
 
@@ -50,6 +52,7 @@ class DeliveryService
                                 PartnerRepository $partnerRepository,
                                 SharedOrderTypeRepository $sharedOrderTypeRepository,
                                 SharedOrderPaymentRepository $sharedOrderPaymentRepository,
+                                SharedCurrencyRepository $sharedCurrencyRepository,
                                 OrderService $orderService
     )
     {
@@ -60,34 +63,46 @@ class DeliveryService
         $this->partnerRepository = $partnerRepository;
         $this->sharedOrderTypeRepository = $sharedOrderTypeRepository;
         $this->sharedOrderPaymentRepository = $sharedOrderPaymentRepository;
+        $this->sharedCurrencyRepository = $sharedCurrencyRepository;
 
         $this->orderService = $orderService;
     }
 
     public function createPackage($fields)
-    {
-        if (!isset($fields['currency_id'])) $fields['currency_id'] = 1;
-        
-        if (!isset($fields['type_id'])) {
-            $sharedOrderTypeFound = $this->sharedOrderTypeRepository->findByField('tipo', config('erpnetModels.salesOrderTypeName'));
-            $fields['type_id'] = $sharedOrderTypeFound->id;
-        }
-
-        if (isset($fields['pagamento'])) {
-            $sharedOrderPaymentFound = $this->sharedOrderPaymentRepository->findByField('pagamento', $fields['pagamento']);
-            $fields['payment_id'] = $sharedOrderPaymentFound->id;
-        }
-
-        if (!isset($fields['address_id'])){
-            $addressCreated = $this->addressRepository->create($fields);
-            $fields['address_id'] = $addressCreated->id;
-        }
-        if (!isset($fields['partner_id'])){
-            $partnerCreated = $this->partnerRepository->create($fields);
-            $fields['partner_id'] = $partnerCreated->id;
-        }
-        
+    {        
         $orderCreated = $this->orderRepository->create($fields);
+
+        $partnerData = null;
+        if (isset($fields['partner_id'])) $partnerData = $this->partnerRepository->find($fields['partner_id']);
+        if (is_null($partnerData)) $partnerData = $this->partnerRepository->create($fields);
+        $orderCreated->partner()->associate($partnerData);
+
+        $addressData = null;
+        if (isset($fields['address_id'])) $addressData = $this->addressRepository->find($fields['address_id']);
+        if (is_null($addressData)) $addressData = $this->addressRepository->create($fields);
+        $orderCreated->address()->associate($addressData);
+        
+        if (isset($fields['pagamento'])) {
+            $sharedOrderPaymentData = null;
+            $sharedOrderPaymentData = $this->sharedOrderPaymentRepository
+                ->findByField('pagamento', $fields['pagamento'])->first();
+            if(!is_null($sharedOrderPaymentData))
+                $orderCreated->sharedOrderPayment()->associate($sharedOrderPaymentData);
+        }
+
+        $sharedOrderTypeData = null;
+        $sharedOrderTypeData = $this->sharedOrderTypeRepository
+            ->findByField('tipo', config('erpnetModels.salesOrderTypeName'))->first();
+        if(!is_null($sharedOrderTypeData))
+            $orderCreated->sharedOrderType()->associate($sharedOrderTypeData);
+
+        $sharedCurrencyData = null;
+        $sharedCurrencyData = $this->sharedCurrencyRepository
+            ->findByField('nome_universal', config('erpnetModels.currencyName'))->first();
+        if(!is_null($sharedCurrencyData))
+            $orderCreated->sharedCurrency()->associate($sharedCurrencyData);
+
+        $orderCreated->save();
 
         $orderCreated = $this->orderService->changeToOpenStatus($orderCreated->id);
 
