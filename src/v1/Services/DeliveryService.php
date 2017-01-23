@@ -18,6 +18,7 @@ use ErpNET\Models\v1\Interfaces\PartnerRepository;
 use ErpNET\Models\v1\Interfaces\ProductRepository;
 use ErpNET\Delivery\v1\Entities\DeliveryPackageEloquent;
 use ErpNET\Models\v1\Interfaces\ProductGroupRepository;
+use ErpNET\Models\v1\Interfaces\SharedOrderTypeRepository;
 use ErpNET\Models\v1\Interfaces\OrderService;
 
 class DeliveryService
@@ -27,7 +28,8 @@ class DeliveryService
     protected $orderRepository;
     protected $addressRepository;
     protected $partnerRepository;
-    
+    protected $sharedOrderTypeRepository;
+
     protected $orderService;
 
     /**
@@ -44,6 +46,7 @@ class DeliveryService
                                 OrderRepository $orderRepository,
                                 AddressRepository $addressRepository, 
                                 PartnerRepository $partnerRepository,
+                                SharedOrderTypeRepository $sharedOrderTypeRepository,
                                 OrderService $orderService
     )
     {
@@ -52,12 +55,22 @@ class DeliveryService
         $this->orderRepository = $orderRepository;
         $this->addressRepository = $addressRepository;
         $this->partnerRepository = $partnerRepository;
-        
+        $this->sharedOrderTypeRepository = $sharedOrderTypeRepository;
+
         $this->orderService = $orderService;
     }
 
     public function createPackage($fields)
     {
+        if (!isset($fields['currency_id'])) $fields['currency_id'] = 1;
+        if (!isset($fields['type_id'])) {
+            $sharedOrderTypeFound = $this->sharedOrderTypeRepository->findByField('tipo', config('erpnetModels.salesOrderTypeName'));
+            $fields['type_id'] = $sharedOrderTypeFound->id;
+        }
+
+        if (!isset($fields['payment_id'])) $fields['payment_id'] = 1;
+
+
         if (!isset($fields['address_id'])){
             $addressCreated = $this->addressRepository->create($fields);
             $fields['address_id'] = $addressCreated->id;
