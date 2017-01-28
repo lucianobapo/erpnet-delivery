@@ -102,6 +102,10 @@ class DeliveryService
         if(!is_null($sharedCurrencyData))
             $orderCreated->sharedCurrency()->associate($sharedCurrencyData);
 
+        if(isset($fields['items']) && is_array($fields['items']) && count($fields['items'])>0){
+            $orderCreated->orderItems()->createMany($fields['items']);
+        }
+        
         $orderCreated->save();
 
         $orderCreated = $this->orderService->changeToOpenStatus($orderCreated->id);
