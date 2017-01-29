@@ -22,6 +22,7 @@ use ErpNET\Models\v1\Interfaces\SharedOrderTypeRepository;
 use ErpNET\Models\v1\Interfaces\SharedOrderPaymentRepository;
 use ErpNET\Models\v1\Interfaces\SharedCurrencyRepository;
 use ErpNET\Models\v1\Interfaces\OrderService;
+use ErpNET\Models\v1\Interfaces\PartnerService;
 
 class DeliveryService
 {
@@ -35,14 +36,21 @@ class DeliveryService
     protected $sharedCurrencyRepository;
 
     protected $orderService;
+    protected $partnerService;
 
     /**
      * Service constructor.
-     * 
+     *
      * @param ProductRepository $productRepository
      * @param ProductGroupRepository $productGroupRepository
      * @param OrderRepository $orderRepository
      * @param AddressRepository $addressRepository
+     * @param PartnerRepository $partnerRepository
+     * @param SharedOrderTypeRepository $sharedOrderTypeRepository
+     * @param SharedOrderPaymentRepository $sharedOrderPaymentRepository
+     * @param SharedCurrencyRepository $sharedCurrencyRepository
+     * @param OrderService $orderService
+     * @param PartnerService $partnerService
      */
     public function __construct(
                                 ProductRepository $productRepository, 
@@ -53,7 +61,9 @@ class DeliveryService
                                 SharedOrderTypeRepository $sharedOrderTypeRepository,
                                 SharedOrderPaymentRepository $sharedOrderPaymentRepository,
                                 SharedCurrencyRepository $sharedCurrencyRepository,
-                                OrderService $orderService
+    
+                                OrderService $orderService,
+                                PartnerService $partnerService
     )
     {
         $this->productRepository = $productRepository;
@@ -66,6 +76,7 @@ class DeliveryService
         $this->sharedCurrencyRepository = $sharedCurrencyRepository;
 
         $this->orderService = $orderService;
+        $this->partnerService = $partnerService;
     }
 
     public function createPackage($fields)
@@ -76,7 +87,7 @@ class DeliveryService
         if (isset($fields['partner_id'])) $partnerData = $this->partnerRepository->find($fields['partner_id']);
         if (is_null($partnerData)) {
             $partnerData = $this->partnerRepository->create($fields);
-            $partnerData = $this->partnerRepository->changeToActiveStatus($partnerData);
+            $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
         }
         $orderCreated->partner()->associate($partnerData);
 
