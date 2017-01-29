@@ -74,7 +74,10 @@ class DeliveryService
 
         $partnerData = null;
         if (isset($fields['partner_id'])) $partnerData = $this->partnerRepository->find($fields['partner_id']);
-        if (is_null($partnerData)) $partnerData = $this->partnerRepository->create($fields);
+        if (is_null($partnerData)) {
+            $partnerData = $this->partnerRepository->create($fields);
+            $partnerData = $this->partnerRepository->changeToActiveStatus($partnerData);
+        }
         $orderCreated->partner()->associate($partnerData);
 
         $addressData = null;
