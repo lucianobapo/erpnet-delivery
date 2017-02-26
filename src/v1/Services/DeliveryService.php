@@ -15,6 +15,7 @@ use ErpNET\Models\v1\Criteria\ProductGroupCategoriesCriteria;
 use ErpNET\Models\v1\Interfaces\AddressRepository;
 use ErpNET\Models\v1\Interfaces\OrderRepository;
 use ErpNET\Models\v1\Interfaces\PartnerRepository;
+use ErpNET\Models\v1\Interfaces\ContactRepository;
 use ErpNET\Models\v1\Interfaces\ProductRepository;
 use ErpNET\Delivery\v1\Entities\DeliveryPackageEloquent;
 use ErpNET\Models\v1\Interfaces\ProductGroupRepository;
@@ -26,6 +27,7 @@ use ErpNET\Models\v1\Interfaces\PartnerService;
 
 class DeliveryService
 {
+    protected $contactRepository;
     protected $productRepository;
     protected $productGroupRepository;
     protected $orderRepository;
@@ -53,6 +55,7 @@ class DeliveryService
      * @param PartnerService $partnerService
      */
     public function __construct(
+                                ContactRepository $contactRepository, 
                                 ProductRepository $productRepository, 
                                 ProductGroupRepository $productGroupRepository, 
                                 OrderRepository $orderRepository,
@@ -66,6 +69,7 @@ class DeliveryService
                                 PartnerService $partnerService
     )
     {
+        $this->contactRepository = $contactRepository;
         $this->productRepository = $productRepository;
         $this->productGroupRepository = $productGroupRepository;
         $this->orderRepository = $orderRepository;
@@ -88,8 +92,32 @@ class DeliveryService
         if (is_null($partnerData)) {
             $partnerData = $this->partnerRepository->create($fields);
             $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
-        }
+        }        
         $orderCreated->partner()->associate($partnerData);
+
+        if(isset($fields['contacts']) && is_array($fields['contacts']) && count($fields['contacts'])>0){
+            if (isset($fields['contacts']['emailCheck']) && $fields['contacts']['emailCheck'])
+                $contactData = $this->contactRepository->create([
+                    'partner_id'=>$partnerData->id,
+                    'mandante'=>$fields['mandante'],
+                    'contact_type'=>'email',
+                    'contact_data'=>$fields['contacts']['email'],
+                ]);
+            if (isset($fields['contacts']['smsCheck']) && $fields['contacts']['smsCheck'])
+                $contactData = $this->contactRepository->create([
+                    'partner_id'=>$partnerData->id,
+                    'mandante'=>$fields['mandante'],
+                    'contact_type'=>'sms',
+                    'contact_data'=>$fields['contacts']['sms'],
+                ]);
+            if (isset($fields['contacts']['whatsappCheck']) && $fields['contacts']['whatsappCheck'])
+                $contactData = $this->contactRepository->create([
+                    'partner_id'=>$partnerData->id,
+                    'mandante'=>$fields['mandante'],
+                    'contact_type'=>'whatsapp',
+                    'contact_data'=>$fields['contacts']['whatsapp'],
+                ]);
+        }
 
         $addressData = null;
         if (isset($fields['address_id'])) $addressData = $this->addressRepository->find($fields['address_id']);
