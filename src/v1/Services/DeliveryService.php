@@ -13,6 +13,7 @@ use ErpNET\Models\v1\Criteria\ProductActiveCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupActivatedCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupCategoriesCriteria;
 use ErpNET\Models\v1\Interfaces\AddressRepository;
+use ErpNET\Models\v1\Interfaces\ItemOrderRepository;
 use ErpNET\Models\v1\Interfaces\OrderRepository;
 use ErpNET\Models\v1\Interfaces\PartnerRepository;
 use ErpNET\Models\v1\Interfaces\ContactRepository;
@@ -59,7 +60,8 @@ class DeliveryService
                                 ProductRepository $productRepository, 
                                 ProductGroupRepository $productGroupRepository, 
                                 OrderRepository $orderRepository,
-                                AddressRepository $addressRepository, 
+                                ItemOrderRepository $itemOrderRepository,
+                                AddressRepository $addressRepository,
                                 PartnerRepository $partnerRepository,
                                 SharedOrderTypeRepository $sharedOrderTypeRepository,
                                 SharedOrderPaymentRepository $sharedOrderPaymentRepository,
@@ -73,6 +75,7 @@ class DeliveryService
         $this->productRepository = $productRepository;
         $this->productGroupRepository = $productGroupRepository;
         $this->orderRepository = $orderRepository;
+        $this->itemOrderRepository = $itemOrderRepository;
         $this->addressRepository = $addressRepository;
         $this->partnerRepository = $partnerRepository;
         $this->sharedOrderTypeRepository = $sharedOrderTypeRepository;
@@ -164,5 +167,11 @@ class DeliveryService
 //        dd($products->toArray());
         
         return $orderCreated;
+    }
+
+    public function productStock()
+    {
+        $productData = $this->productRepository->all()->toArray();
+        $itemData = $this->itemOrderRepository->all()->toArray();
     }
 }

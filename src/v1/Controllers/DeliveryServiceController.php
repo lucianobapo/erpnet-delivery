@@ -23,11 +23,33 @@ class DeliveryServiceController extends Controller
         $this->service = $deliveryService;
     }
 
+    public function config()
+    {
+        
+    }
+    
+    public function productStock()
+    {
+//        list($render, $allData) = $this->getIndexData();
+
+        $allData = $this->service->productStock();
+
+        if (request()->wantsJson()) {
+
+            return response()->json([
+                'data' => $allData,
+            ]);
+        }
+
+        //Render welcome if view with route's name not available
+//        return $this->render('index', $allData, null, $render);
+    }
+    
     public function package()
     {
         try{
             $fields = request()->all();
-            logger($fields);
+            if(config('app.debug')) logger($fields);
 
             $createdData = $this->service->createPackage($fields);
             
