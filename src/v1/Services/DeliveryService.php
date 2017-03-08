@@ -32,6 +32,7 @@ class DeliveryService
     protected $productRepository;
     protected $productGroupRepository;
     protected $orderRepository;
+    protected $itemOrderRepository;
     protected $addressRepository;
     protected $partnerRepository;
     protected $sharedOrderTypeRepository;
@@ -171,7 +172,13 @@ class DeliveryService
 
     public function productStock()
     {
-        $productData = $this->productRepository->all()->toArray();
-        $itemData = $this->itemOrderRepository->all()->toArray();
+//        $productData = $this->productRepository->all()->toArray();
+//        dd($productData);
+//        $itemData = $this->itemOrderRepository->all()->toArray();
+        $itemData = $this->itemOrderRepository
+            ->pushCriteria(app(OpenItemOrdersCriteria::class))
+            ->all()
+            ->toArray();
+        dd($itemData);
     }
 }
