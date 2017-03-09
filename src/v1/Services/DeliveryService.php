@@ -9,6 +9,7 @@
 
 namespace ErpNET\Delivery\v1\Services;
 
+use ErpNET\Models\v1\Criteria\OpenItemOrdersCriteria;
 use ErpNET\Models\v1\Criteria\ProductActiveCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupActivatedCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupCategoriesCriteria;
@@ -25,6 +26,7 @@ use ErpNET\Models\v1\Interfaces\SharedOrderPaymentRepository;
 use ErpNET\Models\v1\Interfaces\SharedCurrencyRepository;
 use ErpNET\Models\v1\Interfaces\OrderService;
 use ErpNET\Models\v1\Interfaces\PartnerService;
+use Illuminate\Support\Facades\DB;
 
 class DeliveryService
 {
@@ -172,13 +174,53 @@ class DeliveryService
 
     public function productStock()
     {
-//        $productData = $this->productRepository->all()->toArray();
-//        dd($productData);
-//        $itemData = $this->itemOrderRepository->all()->toArray();
+        $cacheQuery = DB::table('orders')
+            ->select(DB::raw('count(id), MAX(updated_at)'))
+            ->get();
+        $key = md5($cacheQuery);
+
+        if (config('repository.cache.enabled') && \Cache::has($key)){
+            $productStock = \Cache::get($key);
+        }else{
+            $productStock = $this->calculateProductStock();
+        }
+
+        if (config('repository.cache.enabled') && !\Cache::has($key)){
+            $expiresAt = \Carbon\Carbon::now()->addDay();
+            \Cache::put($key, $productStock, $expiresAt);
+        }
+
+        return $productStock;
+    }
+
+    /**
+     * @return array
+     */
+    private function calculateProductStock(): array
+    {
         $itemData = $this->itemOrderRepository
             ->pushCriteria(app(OpenItemOrdersCriteria::class))
             ->all()
             ->toArray();
-        dd($itemData);
+
+        $productStock = [];
+        foreach ($itemData as $itemOrder){
+            $product_id = $itemOrder['product_id'];
+            $stockQuantity = 0;
+            if($itemOrder['order']['shared_order_type']['tipo']==config('erpnetModels.salesOrderTypeName')){
+                $stockQuantity = -$itemOrder['quantidade'];
+            }
+            if($itemOrder['order']['shared_order_type']['tipo']==config('erpnetModels.purchaseOrderTypeName')){
+                $stockQuantity = $itemOrder['quantidade'];
+            }
+
+            if(isset($productStock[$product_id])){
+                $productStock[$product_id]['stockQuantity'] = $productStock[$product_id]['stockQuantity']+$stockQuantity;
+            }else{
+                $productStock[$product_id] = $itemOrder['product'];
+                $productStock[$product_id]['stockQuantity'] = $stockQuantity;
+            }
+        }
+        return $productStock;
     }
 }

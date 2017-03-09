@@ -20,6 +20,10 @@ class DeliveryServiceController extends Controller
      */
     public function __construct(DeliveryService $deliveryService)
     {
+        if (!request()->wantsJson()) {
+
+            $this->middleware('web');
+        }
         $this->service = $deliveryService;
     }
 
@@ -40,6 +44,8 @@ class DeliveryServiceController extends Controller
                 'data' => $allData,
             ]);
         }
+
+        return view('welcome')->with(['data'=>$allData]);
 
         //Render welcome if view with route's name not available
 //        return $this->render('index', $allData, null, $render);

@@ -35,6 +35,7 @@ $router
                     'uses'=> 'ApiController@appVersion'
                 ]);                
                 
+                $router->get('/delivery/productStock', ['as'=>'delivery.productStock','uses'=> 'DeliveryServiceController@productStock']);
                 $router->get('/delivery', ['as'=>'delivery.config','uses'=> 'DeliveryServiceController@config']);
                 $router->post('/delivery', ['as'=>'delivery.package','uses'=> 'DeliveryServiceController@package']);
             });
