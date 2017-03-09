@@ -179,13 +179,13 @@ class DeliveryService
             ->get();
         $key = md5($cacheQuery);
 
-        if (config('repository.cache.enabled') && \Cache::has($key)){
+        if (config('erpnetMigrates.forceProductStockCache') && \Cache::has($key)){
             $productStock = \Cache::get($key);
         }else{
             $productStock = $this->calculateProductStock();
         }
 
-        if (config('repository.cache.enabled') && !\Cache::has($key)){
+        if (config('erpnetMigrates.forceProductStockCache') && !\Cache::has($key)){
             $expiresAt = \Carbon\Carbon::now()->addDay();
             \Cache::put($key, $productStock, $expiresAt);
         }
@@ -221,6 +221,10 @@ class DeliveryService
                 $productStock[$product_id]['stockQuantity'] = $stockQuantity;
             }
         }
-        return $productStock;
+        $result = [];
+        foreach ($productStock as $key=>$value){
+            array_push($result, $value);
+        }
+        return $result;
     }
 }
