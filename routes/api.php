@@ -30,10 +30,10 @@ $router
     ->version('v1', function (Router $router) use ($routeConfigV1) {
         $router
             ->group($routeConfigV1, function (Router $router) use ($routeConfigV1) {
-                $router->get('appVersion', [
-                    'as'=>'api.appVersion',
-                    'uses'=> 'ApiController@appVersion'
-                ]);                
+//                $router->get('appVersion', [
+//                    'as'=>'api.appVersion',
+//                    'uses'=> 'ApiController@appVersion'
+//                ]);
                 
                 $router->get('/delivery/productStock', ['as'=>'delivery.productStock','uses'=> 'DeliveryServiceController@productStock']);
                 $router->get('/delivery', ['as'=>'delivery.config','uses'=> 'DeliveryServiceController@config']);
