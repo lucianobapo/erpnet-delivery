@@ -2,7 +2,7 @@
 
 namespace ErpNET\Delivery\v1\Controllers;
 
-use ErpNET\Delivery\v1\Services\DeliveryService;
+use ErpNET\Delivery\v1\Interfaces\DeliveryService;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 /**

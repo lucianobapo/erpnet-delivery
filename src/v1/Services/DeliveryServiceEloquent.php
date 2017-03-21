@@ -29,7 +29,7 @@ use ErpNET\Models\v1\Interfaces\PartnerService;
 use ErpNET\Models\v1\Interfaces\UserRepository;
 use Illuminate\Support\Facades\DB;
 
-class DeliveryService
+class DeliveryServiceEloquent
 {
     protected $contactRepository;
     protected $productRepository;
