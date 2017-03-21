@@ -38,6 +38,8 @@ class ErpnetDeliveryServiceProvider extends ServiceProvider
 //            }
 //        }
 
+        $app->bind(\ErpNET\Delivery\v1\Interfaces\DeliveryService::class, \ErpNET\Delivery\v1\Services\DeliveryServiceEloquent::class);
+
         //Routing
         include $routesDir."api.php";
         include $routesDir."web.php";

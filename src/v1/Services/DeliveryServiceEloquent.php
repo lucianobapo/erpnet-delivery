@@ -97,10 +97,25 @@ class DeliveryServiceEloquent implements DeliveryService
     public function createUser($fields){
         $userCreated = $this->userRepository->create($fields);
 
-        $partnerData = $this->partnerRepository->create($fields);
+        $attributes = [
+            'mandante' => $fields['mandante'],
+            'nome' => $fields['name'],
+        ];
+        if(isset($fields['birthday'])) $attributes['data_nascimento'] = $fields['birthday'];
+        $partnerData = $this->partnerRepository->create($attributes);
+
         $partnerData = $this->partnerService->setToClientGroup($partnerData);
         $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
 
+        if (isset($fields['email']))
+            $contactData = $this->contactRepository->create([
+                'partner_id'=>$partnerData->id,
+                'mandante'=>$fields['mandante'],
+                'contact_type'=>'email',
+                'contact_data'=>$fields['email'],
+            ]);
+
+        return $userCreated;
     }
 
     public function createPackage($fields)
@@ -111,7 +126,7 @@ class DeliveryServiceEloquent implements DeliveryService
         if (isset($fields['partner_id'])) $partnerData = $this->partnerRepository->find($fields['partner_id']);
         if (is_null($partnerData)) {
             $partnerData = $this->partnerRepository->create($fields);
-            $partnerData = $this->partnerService->changeToClientGroup($partnerData);
+            $partnerData = $this->partnerService->setToClientGroup($partnerData);
             $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
         }        
         $orderCreated->partner()->associate($partnerData);
