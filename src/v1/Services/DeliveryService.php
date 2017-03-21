@@ -26,6 +26,7 @@ use ErpNET\Models\v1\Interfaces\SharedOrderPaymentRepository;
 use ErpNET\Models\v1\Interfaces\SharedCurrencyRepository;
 use ErpNET\Models\v1\Interfaces\OrderService;
 use ErpNET\Models\v1\Interfaces\PartnerService;
+use ErpNET\Models\v1\Interfaces\UserRepository;
 use Illuminate\Support\Facades\DB;
 
 class DeliveryService
@@ -40,6 +41,7 @@ class DeliveryService
     protected $sharedOrderTypeRepository;
     protected $sharedOrderPaymentRepository;
     protected $sharedCurrencyRepository;
+    protected $userRepository;
 
     protected $orderService;
     protected $partnerService;
@@ -69,7 +71,8 @@ class DeliveryService
                                 SharedOrderTypeRepository $sharedOrderTypeRepository,
                                 SharedOrderPaymentRepository $sharedOrderPaymentRepository,
                                 SharedCurrencyRepository $sharedCurrencyRepository,
-    
+                                UserRepository $userRepository,
+
                                 OrderService $orderService,
                                 PartnerService $partnerService
     )
@@ -84,19 +87,30 @@ class DeliveryService
         $this->sharedOrderTypeRepository = $sharedOrderTypeRepository;
         $this->sharedOrderPaymentRepository = $sharedOrderPaymentRepository;
         $this->sharedCurrencyRepository = $sharedCurrencyRepository;
+        $this->userRepository = $userRepository;
 
         $this->orderService = $orderService;
         $this->partnerService = $partnerService;
     }
 
+    public function createUser($fields){
+        $userCreated = $this->userRepository->create($fields);
+
+        $partnerData = $this->partnerRepository->create($fields);
+        $partnerData = $this->partnerService->setToClientGroup($partnerData);
+        $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
+
+    }
+
     public function createPackage($fields)
-    {        
+    {
         $orderCreated = $this->orderRepository->create($fields);
 
         $partnerData = null;
         if (isset($fields['partner_id'])) $partnerData = $this->partnerRepository->find($fields['partner_id']);
         if (is_null($partnerData)) {
             $partnerData = $this->partnerRepository->create($fields);
+            $partnerData = $this->partnerService->changeToClientGroup($partnerData);
             $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
         }        
         $orderCreated->partner()->associate($partnerData);

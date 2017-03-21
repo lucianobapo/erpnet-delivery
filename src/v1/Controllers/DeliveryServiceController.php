@@ -31,6 +31,38 @@ class DeliveryServiceController extends Controller
     {
         
     }
+
+    public function createUser()
+    {
+        try{
+            $fields = request()->all();
+            if(config('app.debug')) logger($fields);
+
+            $createdData = $this->service->createUser($fields);
+
+            $response = [
+                'message' => 'Resource created.',
+                'data'    => $createdData->toArray(),
+            ];
+
+            if (request()->wantsJson()) {
+
+                return response()->json($response);
+            }
+
+            return redirect('welcome');
+
+        } catch (ValidatorException $e) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'error'   => true,
+                    'message' => $e->getMessageBag()
+                ]);
+            }
+
+            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+        }
+    }
     
     public function productStock()
     {
