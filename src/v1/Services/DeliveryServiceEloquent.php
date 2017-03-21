@@ -19,7 +19,6 @@ use ErpNET\Models\v1\Interfaces\OrderRepository;
 use ErpNET\Models\v1\Interfaces\PartnerRepository;
 use ErpNET\Models\v1\Interfaces\ContactRepository;
 use ErpNET\Models\v1\Interfaces\ProductRepository;
-use ErpNET\Delivery\v1\Entities\DeliveryPackageEloquent;
 use ErpNET\Models\v1\Interfaces\ProductGroupRepository;
 use ErpNET\Models\v1\Interfaces\SharedOrderTypeRepository;
 use ErpNET\Models\v1\Interfaces\SharedOrderPaymentRepository;
@@ -27,9 +26,11 @@ use ErpNET\Models\v1\Interfaces\SharedCurrencyRepository;
 use ErpNET\Models\v1\Interfaces\OrderService;
 use ErpNET\Models\v1\Interfaces\PartnerService;
 use ErpNET\Models\v1\Interfaces\UserRepository;
+
+use ErpNET\Delivery\v1\Interfaces\DeliveryService;
 use Illuminate\Support\Facades\DB;
 
-class DeliveryServiceEloquent
+class DeliveryServiceEloquent implements DeliveryService
 {
     protected $contactRepository;
     protected $productRepository;
