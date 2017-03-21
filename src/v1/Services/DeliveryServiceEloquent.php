@@ -13,6 +13,7 @@ use ErpNET\Models\v1\Criteria\OpenItemOrdersCriteria;
 use ErpNET\Models\v1\Criteria\ProductActiveCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupActivatedCriteria;
 use ErpNET\Models\v1\Criteria\ProductGroupCategoriesCriteria;
+use ErpNET\Models\v1\Criteria\UserActiveCriteria;
 use ErpNET\Models\v1\Interfaces\AddressRepository;
 use ErpNET\Models\v1\Interfaces\ItemOrderRepository;
 use ErpNET\Models\v1\Interfaces\OrderRepository;
@@ -104,6 +105,7 @@ class DeliveryServiceEloquent implements DeliveryService
         //Partner
         $partnerAttributes = [
             'mandante' => $fields['mandante'],
+            'user_id'=>$userCreated->id,
             'nome' => $fields['name'],
         ];
         if(isset($fields['birthday'])) $partnerAttributes['data_nascimento'] = $fields['birthday'];
@@ -111,8 +113,6 @@ class DeliveryServiceEloquent implements DeliveryService
 
         $partnerData = $this->partnerService->setToClientGroup($partnerData);
         $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
-
-        $userCreated->partner()->associate($partnerData);
 
         //Provider
         $providerCreated = $this->providerRepository->create([
@@ -131,6 +131,7 @@ class DeliveryServiceEloquent implements DeliveryService
                 'contact_data'=>$fields['email'],
             ]);
 
+        $this->userRepository->pushCriteria(UserActiveCriteria::class);
         return $this->userRepository->find($userCreated->id);
     }
 
