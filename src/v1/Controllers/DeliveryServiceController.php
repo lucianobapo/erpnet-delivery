@@ -3,6 +3,7 @@
 namespace ErpNET\Delivery\v1\Controllers;
 
 use ErpNET\Delivery\v1\Interfaces\DeliveryService;
+use Illuminate\Support\Facades\DB;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 /**
@@ -35,6 +36,7 @@ class DeliveryServiceController extends Controller
     public function createUser()
     {
         try{
+            DB::beginTransaction();
             $fields = request()->all();
             if(config('app.debug')) logger($fields);
 
@@ -45,6 +47,8 @@ class DeliveryServiceController extends Controller
                 'data'    => $createdData->toArray(),
             ];
 
+            DB::commit();
+
             if (request()->wantsJson()) {
 
                 return response()->json($response);
@@ -53,6 +57,7 @@ class DeliveryServiceController extends Controller
             return redirect('welcome');
 
         } catch (ValidatorException $e) {
+            DB::rollBack();
             if (request()->wantsJson()) {
                 return response()->json([
                     'error'   => true,

@@ -20,6 +20,7 @@ use ErpNET\Models\v1\Interfaces\PartnerRepository;
 use ErpNET\Models\v1\Interfaces\ContactRepository;
 use ErpNET\Models\v1\Interfaces\ProductRepository;
 use ErpNET\Models\v1\Interfaces\ProductGroupRepository;
+use ErpNET\Models\v1\Interfaces\ProviderRepository;
 use ErpNET\Models\v1\Interfaces\SharedOrderTypeRepository;
 use ErpNET\Models\v1\Interfaces\SharedOrderPaymentRepository;
 use ErpNET\Models\v1\Interfaces\SharedCurrencyRepository;
@@ -43,6 +44,7 @@ class DeliveryServiceEloquent implements DeliveryService
     protected $sharedOrderPaymentRepository;
     protected $sharedCurrencyRepository;
     protected $userRepository;
+    protected $providerRepository;
 
     protected $orderService;
     protected $partnerService;
@@ -73,6 +75,7 @@ class DeliveryServiceEloquent implements DeliveryService
                                 SharedOrderPaymentRepository $sharedOrderPaymentRepository,
                                 SharedCurrencyRepository $sharedCurrencyRepository,
                                 UserRepository $userRepository,
+                                ProviderRepository $providerRepository,
 
                                 OrderService $orderService,
                                 PartnerService $partnerService
@@ -89,6 +92,7 @@ class DeliveryServiceEloquent implements DeliveryService
         $this->sharedOrderPaymentRepository = $sharedOrderPaymentRepository;
         $this->sharedCurrencyRepository = $sharedCurrencyRepository;
         $this->userRepository = $userRepository;
+        $this->providerRepository = $providerRepository;
 
         $this->orderService = $orderService;
         $this->partnerService = $partnerService;
@@ -97,16 +101,28 @@ class DeliveryServiceEloquent implements DeliveryService
     public function createUser($fields){
         $userCreated = $this->userRepository->create($fields);
 
-        $attributes = [
+        //Partner
+        $partnerAttributes = [
             'mandante' => $fields['mandante'],
             'nome' => $fields['name'],
         ];
-        if(isset($fields['birthday'])) $attributes['data_nascimento'] = $fields['birthday'];
-        $partnerData = $this->partnerRepository->create($attributes);
+        if(isset($fields['birthday'])) $partnerAttributes['data_nascimento'] = $fields['birthday'];
+        $partnerData = $this->partnerRepository->create($partnerAttributes);
 
         $partnerData = $this->partnerService->setToClientGroup($partnerData);
         $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
 
+        $userCreated->partner()->associate($partnerData);
+
+        //Provider
+        $providerCreated = $this->providerRepository->create([
+            'mandante' => $fields['mandante'],
+            'user_id'=>$userCreated->id,
+            'provider' => $fields['provider'],
+            'provider_id' => $fields['provider_id'],
+        ]);
+
+        //Contact
         if (isset($fields['email']))
             $contactData = $this->contactRepository->create([
                 'partner_id'=>$partnerData->id,
@@ -115,7 +131,7 @@ class DeliveryServiceEloquent implements DeliveryService
                 'contact_data'=>$fields['email'],
             ]);
 
-        return $userCreated;
+        return $this->userRepository->find($userCreated->id);
     }
 
     public function createPackage($fields)
@@ -128,7 +144,7 @@ class DeliveryServiceEloquent implements DeliveryService
             $partnerData = $this->partnerRepository->create($fields);
             $partnerData = $this->partnerService->setToClientGroup($partnerData);
             $partnerData = $this->partnerService->changeToActiveStatus($partnerData);
-        }        
+        }
         $orderCreated->partner()->associate($partnerData);
 
         if(isset($fields['contacts']) && is_array($fields['contacts']) && count($fields['contacts'])>0){
